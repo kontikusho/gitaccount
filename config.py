@@ -6,6 +6,15 @@ import json
 import os
 
 
+def format_data(account):
+    """ Fromat Data """
+    return {
+        "account": account["account"],
+        "name": account["name"],
+        "email": account["email"],
+    }
+
+
 class Config:
     """ Config class """
 
@@ -29,29 +38,27 @@ class Config:
         with open(self._path, "w") as _:
             json.dump(self._config, _)
 
-    def add(self, account, name, email):
+    def add(self, account):
         """ Add Account """
-        if self.get(account):
-            self.edit(account, name, email)
+        if self.get(account["account"]):
+            self.edit(account)
             return
+        self._config.append(format_data(account))
 
-        data = {"accountName": account, "name": name, "email": email}
-        self._config.append(data)
-
-    def edit(self, account, name, email):
+    def edit(self, account):
         """ Edit Account """
-        data = self.get(account)
-        data["name"] = name
-        data["email"] = email
+        data = self.get(account["account"])
+        data["name"] = account["name"]
+        data["email"] = account["email"]
 
     def get(self, account):
         """ Get Account """
-        data = [x for x in self._config if x["accountName"] == account]
+        data = [x for x in self._config if x["account"] == account]
         return data[0] if data else None
 
     def remove(self, account):
         """ Remove Account """
-        self._config = [x for x in self._config if x["accountName"] != account]
+        self._config = [x for x in self._config if x["account"] != account]
 
     def show(self):
         """ show List """
