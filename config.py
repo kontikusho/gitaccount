@@ -4,15 +4,7 @@
 
 import json
 import os
-
-
-def format_data(account):
-    """ Fromat Data """
-    return {
-        "account": account["account"],
-        "name": account["name"],
-        "email": account["email"],
-    }
+from account import Account, AccountJSONEncoder
 
 
 class Config:
@@ -31,34 +23,33 @@ class Config:
         if not os.path.exists(self._path):
             self.save()
         with open(self._path, "r") as _:
-            self._config = json.load(_)
+            self._config = {
+                k: Account.forge(v)
+                for k, v in json.load(_).items()
+            }
 
     def save(self):
         """ Config Save """
         with open(self._path, "w") as _:
-            json.dump(self._config, _)
+            json.dump(self._config, _, cls=AccountJSONEncoder)
 
-    def add(self, account):
+    def add(self, account: Account):
         """ Add Account """
-        if self.get(account["account"]):
-            self.edit(account)
-            return
-        self._config.append(format_data(account))
+        self._config[account.account] = account
 
-    def edit(self, account):
+    def edit(self, account_name, account: Account):
         """ Edit Account """
-        data = self.get(account["account"])
-        data["name"] = account["name"]
-        data["email"] = account["email"]
+        del self._config[account_name]
+        self._config[account.account] = account
 
-    def get(self, account):
+    def get(self, account: Account):
         """ Get Account """
-        data = [x for x in self._config if x["account"] == account]
-        return data[0] if data else None
+        return self._config[
+            account.account] if account.account in self._config else False
 
-    def remove(self, account):
+    def remove(self, account: Account):
         """ Remove Account """
-        self._config = [x for x in self._config if x["account"] != account]
+        self._config = [x for x in self._config if x != account]
 
     def show(self):
         """ show List """
