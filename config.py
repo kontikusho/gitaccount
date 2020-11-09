@@ -11,7 +11,7 @@ class Config:
     """ Config class """
 
     _path = os.environ["HOME"] + "/.gitaccount"
-    _config = []
+    _config = {}
 
     def __init__(self, path=None):
         """ init Method """
