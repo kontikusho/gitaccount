@@ -51,6 +51,11 @@ class Menu:
             "source": "edit",
             "dst": "list"
         },
+        {
+            "trigger": "end",
+            "source": "set",
+            "dst": "end"
+        },
     ]
 
     def __init__(self):
